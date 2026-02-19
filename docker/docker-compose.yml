@@ -272,7 +272,7 @@ services:
       config-server:
         condition: service_healthy
     environment:
-      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
       interval: 15s
@@ -294,7 +294,7 @@ services:
       service-registry:
         condition: service_healthy
     environment:
-      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
     networks:
       - ecommerce-network
 
@@ -314,7 +314,7 @@ services:
       user-db:
         condition: service_healthy
     environment:
-      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
     networks:
       - ecommerce-network
 
@@ -333,7 +333,7 @@ services:
       product-db:
         condition: service_healthy
     environment:
-      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
     networks:
       - ecommerce-network
 
@@ -354,7 +354,7 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
     networks:
       - ecommerce-network
 
@@ -375,7 +375,7 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
     networks:
       - ecommerce-network
 
@@ -396,7 +396,7 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
     networks:
       - ecommerce-network
 
@@ -417,7 +417,7 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      CONFIG_SERVER_URL: http://config-server:8888
     networks:
       - ecommerce-network
 

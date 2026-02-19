@@ -1,0 +1,16 @@
+spring:
+  data:
+    redis:
+      host: localhost
+  datasource:
+    url: jdbc:postgresql://localhost:5431/user_service_db
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+management:
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces

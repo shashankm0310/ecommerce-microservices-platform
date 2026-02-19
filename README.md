@@ -96,11 +96,35 @@ graph TB
 mvn clean install -DskipTests
 ```
 
-### Run with Docker Compose
+### Option A: Run with Docker Compose (all-in-one)
 ```bash
 cd docker
 docker-compose up -d
 ```
+
+### Option B: Run Locally (services on host, infra in Docker)
+
+**1. Start infrastructure only:**
+```bash
+cd docker
+docker-compose up -d zookeeper kafka redis zipkin otel-collector prometheus grafana keycloak user-db product-db order-db inventory-db payment-db notification-db
+```
+
+**2. Start services (in order, each in a separate terminal):**
+```bash
+# Wait ~10s between config-server, service-registry, and the rest
+java -jar config-server/target/config-server-1.0.0.jar
+java -jar service-registry/target/service-registry-1.0.0.jar
+java -jar api-gateway/target/api-gateway-1.0.0.jar --spring.profiles.active=local
+java -jar user-service/target/user-service-1.0.0.jar --spring.profiles.active=local
+java -jar product-service/target/product-service-1.0.0.jar --spring.profiles.active=local
+java -jar order-service/target/order-service-1.0.0.jar --spring.profiles.active=local
+java -jar inventory-service/target/inventory-service-1.0.0.jar --spring.profiles.active=local
+java -jar payment-service/target/payment-service-1.0.0.jar --spring.profiles.active=local
+java -jar notification-service/target/notification-service-1.0.0.jar --spring.profiles.active=local
+```
+
+The `local` profile overrides Docker hostnames (kafka, user-db, etc.) with `localhost` equivalents.
 
 ### Verify
 - API Gateway: http://localhost:8080

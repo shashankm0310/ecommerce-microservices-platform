@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5436/notification_service_db
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      properties:
+        interceptor.classes: com.ecommerce.common.logging.KafkaCorrelationIdConsumerInterceptor
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+management:
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces

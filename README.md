@@ -34,9 +34,10 @@ graph TB
     KC[Keycloak :8180] -.-> GW
 
     subgraph Observability
-        OC[OTel Collector] --> ZK[Zipkin :9411]
+        OC[OTel Collector] --> TM[Tempo]
         OC --> PM[Prometheus :9090]
-        PM --> GR[Grafana :3000]
+        PT[Promtail] --> LK[Loki :3100]
+        TM & PM & LK --> GR[Grafana :3000]
     end
 
     US & PS & OS & IS & PMS & NS -->|OTLP| OC
@@ -78,7 +79,7 @@ graph TB
 - **Messaging:** Apache Kafka (Confluent 7.7), Kafka Streams
 - **Security:** Keycloak 26.0 (OAuth2/OIDC), JWT
 - **Resilience:** Resilience4j (Circuit Breaker, Retry, Bulkhead)
-- **Observability:** OpenTelemetry, Grafana Tempo, Prometheus, Grafana
+- **Observability:** OpenTelemetry, Grafana Tempo, Grafana Loki, Prometheus, Grafana
 - **Caching:** Redis with Spring Cache (`@Cacheable`/`@CacheEvict`)
 - **Containerization:** Docker, Kubernetes
 - **CI/CD:** GitHub Actions
@@ -107,7 +108,7 @@ docker-compose up -d
 **1. Start infrastructure only:**
 ```bash
 cd docker
-docker-compose up -d zookeeper kafka redis zipkin otel-collector prometheus grafana keycloak user-db product-db order-db inventory-db payment-db notification-db
+docker-compose up -d zookeeper kafka redis tempo otel-collector loki promtail prometheus grafana keycloak user-db product-db order-db inventory-db payment-db notification-db
 ```
 
 **2. Start services (in order, each in a separate terminal):**
@@ -153,6 +154,8 @@ Microservices/
 │   ├── keycloak/            # Realm export
 │   ├── otel/                # OTel Collector config
 │   ├── tempo/               # Grafana Tempo config
+│   ├── loki/                # Grafana Loki config
+│   ├── promtail/            # Promtail log shipping config
 │   ├── grafana/             # Grafana datasource provisioning
 │   └── prometheus/          # Prometheus config
 ├── k8s/                     # Kubernetes manifests

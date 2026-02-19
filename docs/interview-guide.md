@@ -52,6 +52,11 @@
 **What/Why:** Traces requests across all services end-to-end. Each request gets a trace ID propagated via HTTP headers and Kafka headers. OTel Collector exports traces to Grafana Tempo via OTLP and metrics to Prometheus. Grafana provides unified visualization.
 **Key:** Correlation IDs (MDC) + trace IDs give full observability.
 
+### Centralized Logging (Grafana Loki)
+**What/Why:** Aggregates logs from all services into a single queryable store. Promtail scrapes Docker container logs and ships them to Loki. Grafana links logs ↔ traces ↔ metrics for full observability.
+**Why Loki over ELK?** Loki only indexes labels (service name, correlationId), not full log content — making it far cheaper and simpler to operate than Elasticsearch. It integrates natively with the existing Grafana stack.
+**2-min answer:** "We use the Grafana observability stack: Tempo for traces, Loki for logs, Prometheus for metrics — all visualized in Grafana. Promtail runs as a sidecar that scrapes container logs and extracts correlation IDs via pipeline stages. In Grafana, we can jump from a trace to its corresponding logs, or from a log line to its full distributed trace. This gives us complete end-to-end observability without needing a heavy ELK stack."
+
 ### Caching (Redis)
 **What/Why:** Distributed cache for frequently-read, rarely-written data (products, user profiles, inventory levels). `@Cacheable`/`@CacheEvict` annotations with JSON serialization.
 **Trade-off:** Cache invalidation on writes. TTL-based expiry as safety net.

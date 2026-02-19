@@ -102,3 +102,20 @@
 - `NotificationStrategy` interface with `EmailNotificationStrategy`, `SmsNotificationStrategy` — resolved via `NotificationStrategyFactory`
 
 Adding a new payment method or notification channel only requires a new `@Component` — no factory or service changes needed (Open/Closed Principle).
+
+---
+
+## ADR-008: Centralized Logging with Grafana Loki
+
+**Status:** Accepted
+
+**Context:** Each microservice logs locally. Debugging production issues requires SSH-ing into individual containers or searching logs across multiple services manually — not feasible at scale.
+
+**Decision:** Adopt Grafana Loki + Promtail for centralized log aggregation:
+- **Promtail** scrapes container logs via Docker socket (Docker Compose) or DaemonSet (K8s)
+- **Loki** stores logs with label-based indexing (service name, container, correlationId)
+- **Grafana** provides unified UI — logs (Loki) + traces (Tempo) + metrics (Prometheus) in one dashboard
+- Correlation IDs extracted from structured logs via Promtail pipeline stages
+- Trace-to-log and log-to-trace linking via Grafana derived fields
+
+**Rationale:** Loki is lightweight compared to Elasticsearch (ELK stack) — it only indexes labels, not full log content. This makes it cost-effective and operationally simpler. It integrates natively with the existing Grafana + Tempo + Prometheus stack, completing the observability trifecta without introducing a separate visualization tool.

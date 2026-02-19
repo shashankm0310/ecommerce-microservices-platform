@@ -1,0 +1,29 @@
+# Build output
+target/
+build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment / Secrets
+.env
+*.env.local
+credentials.json
+
+# Logs
+*.log
+logs/
+
+# Claude Code
+.claude/

@@ -1,0 +1,4 @@
+com.ecommerce.common.logging.CorrelationIdAutoConfiguration
+com.ecommerce.common.kafka.KafkaErrorAutoConfiguration
+com.ecommerce.common.cache.RedisCacheConfig
+com.ecommerce.common.webclient.WebClientConfig

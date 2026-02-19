@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-registry
+  namespace: ecommerce
+  labels:
+    app: service-registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-registry
+  template:
+    metadata:
+      labels:
+        app: service-registry
+    spec:
+      containers:
+        - name: service-registry
+          image: ghcr.io/ecommerce/service-registry:latest
+          ports:
+            - containerPort: 8761
+          env:
+            - name: SPRING_CONFIG_IMPORT
+              value: optional:configserver:http://config-server:8888
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8761
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-registry
+  namespace: ecommerce
+spec:
+  selector:
+    app: service-registry
+  ports:
+    - port: 8761
+      targetPort: 8761

@@ -78,7 +78,7 @@ graph TB
 - **Messaging:** Apache Kafka (Confluent 7.7), Kafka Streams
 - **Security:** Keycloak 26.0 (OAuth2/OIDC), JWT
 - **Resilience:** Resilience4j (Circuit Breaker, Retry, Bulkhead)
-- **Observability:** OpenTelemetry, Zipkin, Prometheus, Grafana
+- **Observability:** OpenTelemetry, Grafana Tempo, Prometheus, Grafana
 - **Caching:** Redis with Spring Cache (`@Cacheable`/`@CacheEvict`)
 - **Containerization:** Docker, Kubernetes
 - **CI/CD:** GitHub Actions
@@ -129,7 +129,7 @@ The `local` profile overrides Docker hostnames (kafka, user-db, etc.) with `loca
 ### Verify
 - API Gateway: http://localhost:8080
 - Eureka Dashboard: http://localhost:8761
-- Zipkin: http://localhost:9411
+- Tempo (via Grafana): http://localhost:3000 → Explore → Tempo datasource
 - Grafana: http://localhost:3000 (admin/admin)
 - Keycloak: http://localhost:8180 (admin/admin)
 - Swagger UI (per service): http://localhost:{port}/swagger-ui.html
@@ -152,6 +152,8 @@ Microservices/
 │   ├── docker-compose.yml
 │   ├── keycloak/            # Realm export
 │   ├── otel/                # OTel Collector config
+│   ├── tempo/               # Grafana Tempo config
+│   ├── grafana/             # Grafana datasource provisioning
 │   └── prometheus/          # Prometheus config
 ├── k8s/                     # Kubernetes manifests
 │   ├── namespace/

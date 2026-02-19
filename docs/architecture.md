@@ -71,9 +71,9 @@
 
 **Context:** Need end-to-end request tracing across all services.
 
-**Decision:** Migrate from Brave+Zipkin to OpenTelemetry via Micrometer bridge. Services export OTLP to an OTel Collector, which fans out to Zipkin (traces) and Prometheus (metrics).
+**Decision:** Migrate from Brave+Zipkin to OpenTelemetry via Micrometer bridge with Grafana Tempo as the trace backend. Services export OTLP to an OTel Collector, which fans out to Tempo (traces via OTLP) and Prometheus (metrics).
 
-**Rationale:** OpenTelemetry is the industry standard, vendor-neutral, and supports traces + metrics + logs in a unified SDK. The OTel Collector provides a pipeline for processing/routing telemetry data.
+**Rationale:** OpenTelemetry is the industry standard, vendor-neutral, and supports traces + metrics + logs in a unified SDK. Grafana Tempo is a cost-effective, scalable trace backend that integrates natively with Grafana for visualization and uses object storage (no indexing required). The OTel Collector provides a pipeline for processing/routing telemetry data.
 
 ---
 

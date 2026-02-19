@@ -1,25 +1,58 @@
 ---
-# Zipkin
+# Grafana Tempo
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tempo-config
+  namespace: ecommerce
+data:
+  tempo-config.yml: |
+    server:
+      http_listen_port: 3200
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /var/tempo/traces
+        wal:
+          path: /var/tempo/wal
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zipkin
+  name: tempo
   namespace: ecommerce
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: zipkin
+      app: tempo
   template:
     metadata:
       labels:
-        app: zipkin
+        app: tempo
     spec:
       containers:
-        - name: zipkin
-          image: openzipkin/zipkin:latest
+        - name: tempo
+          image: grafana/tempo:2.6.1
+          args: ["-config.file=/etc/tempo/tempo-config.yml"]
           ports:
-            - containerPort: 9411
+            - containerPort: 3200
+            - containerPort: 4317
+            - containerPort: 4318
+          volumeMounts:
+            - name: config
+              mountPath: /etc/tempo
+            - name: data
+              mountPath: /var/tempo
           resources:
             requests:
               cpu: 100m
@@ -27,18 +60,31 @@ spec:
             limits:
               cpu: 250m
               memory: 512Mi
+      volumes:
+        - name: config
+          configMap:
+            name: tempo-config
+        - name: data
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: zipkin
+  name: tempo
   namespace: ecommerce
 spec:
   selector:
-    app: zipkin
+    app: tempo
   ports:
-    - port: 9411
-      targetPort: 9411
+    - name: http
+      port: 3200
+      targetPort: 3200
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
 ---
 # OpenTelemetry Collector
 apiVersion: v1
@@ -60,8 +106,10 @@ data:
         timeout: 5s
         send_batch_size: 1024
     exporters:
-      zipkin:
-        endpoint: http://zipkin:9411/api/v2/spans
+      otlp/tempo:
+        endpoint: http://tempo:4317
+        tls:
+          insecure: true
       prometheus:
         endpoint: 0.0.0.0:8889
       debug:
@@ -71,7 +119,7 @@ data:
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [zipkin, debug]
+          exporters: [otlp/tempo, debug]
         metrics:
           receivers: [otlp]
           processors: [batch]

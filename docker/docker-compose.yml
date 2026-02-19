@@ -174,11 +174,17 @@ services:
       - ecommerce-network
 
   # ==================== OBSERVABILITY ====================
-  zipkin:
-    image: openzipkin/zipkin:latest
-    container_name: zipkin
+  tempo:
+    image: grafana/tempo:2.6.1
+    container_name: tempo
+    command: ["-config.file=/etc/tempo/tempo-config.yml"]
+    volumes:
+      - ./tempo/tempo-config.yml:/etc/tempo/tempo-config.yml
+      - tempo-data:/var/tempo
     ports:
-      - "9411:9411"
+      - "3200:3200"    # Tempo HTTP API
+      - "4317"         # OTLP gRPC (internal only)
+      - "4318"         # OTLP HTTP (internal only)
     networks:
       - ecommerce-network
 
@@ -193,7 +199,7 @@ services:
       - "4318:4318"    # OTLP HTTP
       - "8889:8889"    # Prometheus exporter
     depends_on:
-      - zipkin
+      - tempo
     networks:
       - ecommerce-network
 
@@ -218,8 +224,10 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
       - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
     depends_on:
       - prometheus
+      - tempo
     networks:
       - ecommerce-network
 
@@ -429,6 +437,7 @@ volumes:
   inventory-db-data:
   payment-db-data:
   notification-db-data:
+  tempo-data:
   prometheus-data:
   grafana-data:
 

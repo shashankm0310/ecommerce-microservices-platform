@@ -49,7 +49,7 @@
 **Config:** Sliding window of 10 calls, 50% failure threshold, 10s open state.
 
 ### Distributed Tracing (OpenTelemetry)
-**What/Why:** Traces requests across all services end-to-end. Each request gets a trace ID propagated via HTTP headers and Kafka headers. OTel Collector exports to Zipkin for visualization.
+**What/Why:** Traces requests across all services end-to-end. Each request gets a trace ID propagated via HTTP headers and Kafka headers. OTel Collector exports traces to Grafana Tempo via OTLP and metrics to Prometheus. Grafana provides unified visualization.
 **Key:** Correlation IDs (MDC) + trace IDs give full observability.
 
 ### Caching (Redis)
